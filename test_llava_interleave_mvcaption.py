@@ -4,7 +4,9 @@
 import os
 # import time
 import cv2
-
+import glob
+import random
+import time
 
 # import copy
 import torch
@@ -91,13 +93,20 @@ def load_image(image_file):
     else:
         print('Load image from local file')
         print(image_file)
-        image = Image.open(image_file).convert("RGB")
+        # image = Image.open(image_file).convert("RGB")
+        image = cv2.imread(image_file, cv2.IMREAD_UNCHANGED)
+        h, w, c = image.shape
+        if c == 4:
+            mask = image[..., 3:4] / 255.
+            image = image[..., :3] * mask + 255. * (1 - mask)   # replace background as white
+        image = image[..., ::-1]
+        # image = cv2.resize(image, (64, 64), cv2.INTER_CUBIC)
+        image = Image.fromarray(image.astype(np.uint8))
         
     return image
 
 
 def clear_history(history):
-
     our_chatbot.conversation = conv_templates[our_chatbot.conv_mode].copy()
 
     return None
@@ -226,7 +235,7 @@ if __name__ == "__main__":
     # argparser.add_argument("--load-8bit", action="store_true")
     # argparser.add_argument("--load-4bit", action="store_true")
     argparser.add_argument("--load-8bit", type=int, default=0)
-    argparser.add_argument("--load-4bit", action="store_true")
+    argparser.add_argument("--load-4bit", type=int, default=1)
     argparser.add_argument("--debug", action="store_true")
     
     args = argparser.parse_args()
@@ -242,35 +251,41 @@ if __name__ == "__main__":
     
     ## first genrate local captions for each images, then gloal captions given random images
     
-    unzipped_tar_root = '/media/yuanxun/G/objv_debug'
+    unzipped_tar_root = 'examples/objaverse'
     all_files = os.listdir(unzipped_tar_root)
     all_images = [f for f in all_files if f.endswith(('.jpg', '.png')) and 'depth' not in f]
     all_ids = sorted(list(set([file.split('.')[0] for file in all_images])))
     
     DESCRIPTION_PROMPTS = [
-        'Please write a detailed image prompt for the object/objects.',
-        'Describe the color, texture, shape, and features of the object/objects in the image.',
-        'Please describe the object/objects in the image.',
-        'Write a image prompt for the object/objects, less than 10 words.'
-        'Write a image prompt for the object/objects, less than 20 words.',
-        'Write a image prompt for the object/objects, less than 50 words.',
-        'Write a image prompt for the object/objects, less than 100 words.',
-        'Write a image prompt for the object/objects, less than 200 words.',
-
+        # 'Please write a detailed image prompt for the object/objects, less than 150 words.',
+        # 'Describe the color, texture, shape, and features of the object/objects in the image.',
+        # 'Please describe the object/objects in the image.',
+        # 'Write a image prompt for the object/objects',
+        'Write a image prompt for the object/objects, less than 10 words.',
+        # 'Write a image prompt for the object/objects, less than 20 words.',
+        # 'Write a image prompt for the object/objects, less than 50 words.',
+        # 'Write a image prompt for the object/objects, less than 100 words.'
     ]
     
-    import glob
+    
     all_ids = all_ids[:1]
+    global_input_image_num = 4
+    num_global_prompts = 1
     for image_id in all_ids:
+        st = time.time()
         image_paths = sorted([os.path.join(unzipped_tar_root, f) for f in all_images if image_id in f])
     
         ### 1. local caption for each image
         for image_path in image_paths:
+            # random select a input prompt
+            input_prompt = np.random.choice(DESCRIPTION_PROMPTS)
+            print('Select a prompt:', input_prompt)
             history = [
                 [(image_path,), None],
-                ['Write a image prompt for the object/objects, less than 10 words.', None]
+                [input_prompt, None]
             ]
-            history, outputs = bot(history)
+            with torch.no_grad():
+                history, outputs = bot(history)
 
             # remove quotation mark of captions
             if outputs.startswith('"') and outputs.endswith('"'):
@@ -280,7 +295,27 @@ if __name__ == "__main__":
                 
             print(f'Local caption for {image_path}: {outputs}')
             clear_history(history)
+        
+        ### 2. global caption given random images
+        for i in range(num_global_prompts):
+            global_image_paths = np.random.choice(image_paths, replace=False, size=global_input_image_num)
+            # random select a input prompt
+            input_prompt = np.random.choice(DESCRIPTION_PROMPTS)
+            print('Select a prompt:', input_prompt)
+            history = [[(global_image_path,), None] for global_image_path in global_image_paths]
+            history.append([input_prompt, None])
+            with torch.no_grad():
+                history, outputs = bot(history)
+
+            # remove quotation mark of captions
+            if outputs.startswith('"') and outputs.endswith('"'):
+                outputs = outputs[1:-1]
+            if outputs.startswith("'") and outputs.endswith("'"):
+                outputs = outputs[1:-1]
                 
+            print(f'Global caption for {image_id}: {outputs}')
+            clear_history(history)     
+        print(f'Time takes for {image_id}: {time.time() - st} seconds.')                                                         
                 
             
             
