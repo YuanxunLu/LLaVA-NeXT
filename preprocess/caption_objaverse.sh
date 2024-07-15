@@ -2,8 +2,7 @@ OUTPUT_ROOT=/media/yuanxun/G/dataset_captions
 WORK_ROOT=/media/yuanxun/G/dataset_captions_work_root
 
 python caption_objaverse.py  \
-    --video_root $VIDEO_ROOT/video_highquality_test \
-    --meta_root $META_ROOT \
+    --output_root $OUTPUT_ROOT \
     --work_root $WORK_ROOT \
     --bucket objaversexxxx \
     --download_tar 1 \
