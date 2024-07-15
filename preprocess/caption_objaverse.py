@@ -189,7 +189,8 @@ def queue_worker(
                          's3', 'cp', bucket_tar, tar_file])
         
         # 2. untar tars
-        tar_root = os.path.join(work_root, os.basename(tar_name))
+        basename = os.path.splitext(os.path.basename(tar_name))[0]
+        tar_root = os.path.join(work_root, basename)
         os.makedirs(tar_root, exist_ok=True)
         with tarfile.open(tar_file, "r:*") as tar:
             tar.extractall(path=tar_root)
@@ -197,7 +198,7 @@ def queue_worker(
             os.remove(tar_file)
         
         # 3. image captions
-        output_caption_folder = os.path.join(output_root, os.basename(tar_name))
+        output_caption_folder = os.path.join(output_root, basename)
         # load llava at first
         model_name = get_model_name_from_path(args.model_path)
         tokenizer, model, image_processor, context_len = load_pretrained_model(
@@ -307,7 +308,7 @@ if __name__ == "__main__":
 
     
     bucket, download_tar, work_root, output_root, num_process = \
-        args.bucket, args.download_tar, args.work_root, args.output_root, args.num_process
+        args.bucket, args.download_tar, args.work_root, args.output_root, args.process
     
     global_input_image_num, num_global_prompts = \
         args.global_input_image_num, args.num_global_prompts
