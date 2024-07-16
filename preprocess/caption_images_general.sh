@@ -13,5 +13,5 @@ python caption_images_multiprocess.py  \
     --load-8bit 0 \
     --load-4bit 0 \
     --process 16 \
-    --global_input_image_num 16 \
+    --global_input_image_num 8 \
     --num_global_prompts 1 \

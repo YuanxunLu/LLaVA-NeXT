@@ -25,7 +25,7 @@ from PIL import Image
 import glob
 import random
 import time
-import torch
+# import torch
 
 from llava import conversation as conversation_lib
 from llava.constants import DEFAULT_IMAGE_TOKEN
