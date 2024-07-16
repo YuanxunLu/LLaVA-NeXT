@@ -188,14 +188,15 @@ if __name__ == "__main__":
     parser.add_argument("--load-4bit", type=int, default=0)
     parser.add_argument('--global_input_image_num', type=int, default=16)
     parser.add_argument('--num_global_prompts', type=int, default=1)
+    parser.add_argument('--local_prompt_percent', type=float, default=0.15)
     args = parser.parse_args()
 
     
     bucket, download_tar, work_root, output_root, num_process = \
         args.bucket, args.download_tar, args.work_root, args.output_root, args.process
     
-    global_input_image_num, num_global_prompts = \
-        args.global_input_image_num, args.num_global_prompts
+    global_input_image_num, num_global_prompts, local_prompt_percent = \
+        args.global_input_image_num, args.num_global_prompts, args.local_prompt_percent
     
     tar_name, gpu_id = args.tar_file, args.gpu_id
     
@@ -262,9 +263,11 @@ if __name__ == "__main__":
 
     for worker_task_id, image_id in enumerate(all_ids):
         image_paths = sorted([os.path.join(tar_root, f) for f in all_images if image_id in f])
-    
+        num_selected_image_paths = int(local_prompt_percent * len(image_paths))
+        selected_image_paths = np.random.choice(image_paths, replace=False, size=num_selected_image_paths)
+        
         ### 1. local caption for each image
-        for image_path in image_paths:
+        for image_path in selected_image_paths:
             # random select a input prompt
             input_prompt = np.random.choice(DESCRIPTION_PROMPTS)
             # print('Select a prompt:', input_prompt)

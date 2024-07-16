@@ -61,7 +61,7 @@ def queue_worker(
         gpu_id = worker_i % 8
         
         # run the single script file
-        command = f'CUDA_VISIBLE_DEVICES={gpu_id} python caption_images_single_general.py --output_root {output_root} --work_root {work_root} --bucket {bucket} --tar_file {tar_name} --load_8bit 0 --load_4bit 0 --global_input_image_num 16 --num_global_prompts 1'
+        command = f'CUDA_VISIBLE_DEVICES={gpu_id} python caption_images_single_general.py --output_root {output_root} --work_root {work_root} --bucket {bucket} --tar_file {tar_name} --local_prompt_percent {local_prompt_percent} --load_8bit 0 --load_4bit 0 --global_input_image_num 16 --num_global_prompts 1'
         subprocess.run(command, shell=True)
         print(f'Preprocessing {tar_name} takes {ed - st} seconds')
 
@@ -80,6 +80,7 @@ if __name__ == "__main__":
     parser.add_argument('--mode', type=str, default='test')
     parser.add_argument('--process', type=int, default=16)
     parser.add_argument('--dataset_type', type=str, default='object', help='object or scene')
+    parser.add_argument('--local_prompt_percent', type=float, default=0.15)
     
     parser.add_argument("--model_path", default="lmms-lab/llava-next-interleave-qwen-7b", type=str)
     parser.add_argument("--model-base", type=str, default=None)
@@ -97,8 +98,8 @@ if __name__ == "__main__":
     bucket, download_tar, work_root, output_root, num_process = \
         args.bucket, args.download_tar, args.work_root, args.output_root, args.process
     
-    global_input_image_num, num_global_prompts = \
-        args.global_input_image_num, args.num_global_prompts
+    global_input_image_num, num_global_prompts, local_prompt_percent = \
+        args.global_input_image_num, args.num_global_prompts, args.local_prompt_percent
     
     # download tar_list first
     if download_tar:        

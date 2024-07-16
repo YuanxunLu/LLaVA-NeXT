@@ -5,6 +5,7 @@ python caption_images_general.py  \
     --output_root $OUTPUT_ROOT \
     --work_root $WORK_ROOT \
     --bucket objaversexxxx \
+    --local_prompt_percent 0.15 \
     --download_tar 1 \
     --skip_tar 0 \
     --num_work_tar 16 \
