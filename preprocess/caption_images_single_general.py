@@ -89,7 +89,7 @@ class InferenceDemo(object):
             args.conv_mode = conv_mode
         self.conv_mode=conv_mode
         self.conversation = conv_templates[args.conv_mode].copy()
-        self.num_frames = args.num_frames
+        # self.num_frames = args.num_frames
 
 
 def load_image(image_file):
@@ -220,6 +220,7 @@ if __name__ == "__main__":
     
     # 3. image captions
     output_caption_folder = os.path.join(output_root, basename)
+    os.makedirs(output_caption_folder, exist_ok=True)
     # load llava at first
     model_name = get_model_name_from_path(args.model_path)
     # tokenizer, model, image_processor, context_len = load_pretrained_model(
@@ -235,30 +236,30 @@ if __name__ == "__main__":
 
     if args.dataset_type == 'object':
         DESCRIPTION_PROMPTS = [
-            'Please write a detailed image prompt for the object/objects.',
-            'Describe the color, texture, shape, and features of the object/objects in the image.',
-            'Please describe the object/objects in the image.',
-            'Write an image prompt for the object/objects.',
-            'Write an image prompt for the object/objects, less than 10 words.',
-            'Write an image prompt for the object/objects, less than 20 words.',
+            'Please write a detailed image prompt for the object/objects, less than 50 words.',
+            'Describe the color, texture, shape, and features of the object/objects in the image, less than 50 words.',
+            'Please describe the object/objects in the image, less than 50 words.',
             'Write an image prompt for the object/objects, less than 50 words.',
-            'Write an image prompt for the object/objects, less than 100 words.',
-            'Write an image prompt for the object/objects, less than 200 words.',
-            'Mention any notable features or details of the object/objects in the image.',
-            'Please provide a comprehensive description of the object/objects, including any visible markings or labels.'
+            # 'Write an image prompt for the object/objects, less than 10 words.',
+            # 'Write an image prompt for the object/objects, less than 20 words.',
+            'Write an image prompt for the object/objects, less than 50 words.',
+            # 'Write an image prompt for the object/objects, less than 100 words.',
+            # 'Write an image prompt for the object/objects, less than 200 words.',
+            'Mention any notable features or details of the object/objects in the image, less than 50 words.',
+            'Please provide a comprehensive description of the object/objects, including any visible markings or labels, less than 50 words.'
         ]
     elif args.dataset_type =='scene':
         DESCRIPTION_PROMPTS = [
-            'Please write a detailed image prompt for the entire scene.',
-            'Describe the colors, textures, shapes, and features of everything in the image, including the background and surroundings.',
-            'Please describe all the elements in the image, focusing on both objects and the overall scene.',
-            'Write a detailed image prompt for the scene.',
-            'Write an image prompt for the scene, less than 10 words.',
-            'Write an image prompt for the scene, less than 20 words.',
+            'Please write a detailed image prompt for the entire scene, less than 50 words.',
+            'Describe the colors, textures, shapes, and features of everything in the image, including the background and surroundings, less than 50 words.',
+            'Please describe all the elements in the image, focusing on both objects and the overall scene, less than 50 words.',
+            'Write a detailed image prompt for the scene, less than 50 words.',
+            # 'Write an image prompt for the scene, less than 10 words.',
+            # 'Write an image prompt for the scene, less than 20 words.',
             'Write an image prompt for the scene, less than 50 words.',
-            'Write an image prompt for the scene, less than 100 words.',
-            'Write an image prompt for the scene, less than 200 words.',
-            'Describe the setting, lighting, and mood of the scene along with the objects within it.'
+            # 'Write an image prompt for the scene, less than 100 words.',
+            # 'Write an image prompt for the scene, less than 200 words.',
+            'Describe the setting, lighting, and mood of the scene along with the objects within it, less than 50 words.'
         ]
 
     for worker_task_id, image_id in enumerate(all_ids):
@@ -288,7 +289,9 @@ if __name__ == "__main__":
             clear_history(our_chatbot, history)
             # save local captions to txt
             txt_file = os.path.join(output_caption_folder, image_path.split('/')[-1][:-4] + '.txt')
-            np.savetxt(txt_file, outputs, fmt='%s')
+            # np.savetxt(txt_file, outputs, fmt='%s')
+            with open(txt_file, 'w') as f:
+                f.write(outputs + '\n')
         
         ### 2. global caption given random images
         if num_global_prompts > 1:
@@ -313,12 +316,15 @@ if __name__ == "__main__":
         # print(f'Global caption for {image_id}: {outputs}')
         clear_history(our_chatbot, history)    
         txt_file = os.path.join(output_caption_folder, image_path.split('/')[-1].split('.')[0] + '.global.txt')
-        np.savetxt(txt_file, outputs, fmt='%s')
-        print(f'[INFO][GPU{gpu_id}][{worker_task_id}/{len(all_ids)}][{image_id}] Time takes {time.time() - st} seconds.')                                                         
+        # np.savetxt(txt_file, outputs, fmt='%s')
+        with open(txt_file, 'w') as f:
+            f.write(outputs + '\n')
+        print(f'[INFO][GPU{gpu_id}][{worker_task_id}/{len(all_ids)}][{image_id}] Time takes {time.time() - st} seconds.')
     
     # 4. tar captions
     caption_tar_file = os.path.join(output_root, tar_name)
     pack_results_single_level(output_caption_folder, caption_tar_file, mode='all')
+    os.system(f'rm -r {tar_root}')
 
     ed = time.time()
     print(f'Preprocessing {tar_name} takes {ed - st} seconds')

@@ -1,10 +1,10 @@
-OUTPUT_ROOT=/media/yuanxun/G/dataset_captions
-WORK_ROOT=/media/yuanxun/G/dataset_captions_work_root
+OUTPUT_ROOT=/mnt/data/dataset_captions
+WORK_ROOT=/mnt/data/dataset_captions_work_root
 
 python caption_objaverse.py  \
     --output_root $OUTPUT_ROOT \
     --work_root $WORK_ROOT \
-    --bucket objaversexxxx \
+    --bucket s3://objaverse-render-random32view-240516 \
     --dataset_type object \
     --download_tar 1 \
     --skip_tar 0 \

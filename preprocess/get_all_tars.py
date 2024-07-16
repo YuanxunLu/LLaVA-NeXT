@@ -2,7 +2,7 @@ import os
 import subprocess
 import numpy as np
 
-bucket = 'objvxxxx'
+bucket = 's3://objaverse-render-random32view-240516'
 
 tar_list_names = ['tar_list_train.txt', 'tar_list_test.txt']
 all_tar_files = []

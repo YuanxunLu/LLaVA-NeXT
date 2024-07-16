@@ -89,7 +89,7 @@ class InferenceDemo(object):
             args.conv_mode = conv_mode
         self.conv_mode=conv_mode
         self.conversation = conv_templates[args.conv_mode].copy()
-        self.num_frames = args.num_frames
+        # self.num_frames = args.num_frames
 
 
 def load_image(image_file):
@@ -166,9 +166,9 @@ def bot(our_chatbot, history):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--work_root', type=str, default='/media/yuanxun/G/dataset_captions_work_root/')
-    parser.add_argument('--output_root', type=str, default='/media/yuanxun/G/dataset_captions/')
-    parser.add_argument('--bucket', type=str, default='')
+    parser.add_argument('--work_root', type=str, default='/mnt/data/dataset_captions_work_root')
+    parser.add_argument('--output_root', type=str, default='/mnt/data/dataset_captions')
+    parser.add_argument('--bucket', type=str, default='s3://objaverse-render-random32view-240516')
     parser.add_argument('--download_tar', type=int, default=1)
     parser.add_argument('--skip_tar', type=int, default=0)
     parser.add_argument('--num_work_tar', type=int, default=16)
@@ -218,10 +218,11 @@ if __name__ == "__main__":
     
     # 3. image captions
     output_caption_folder = os.path.join(output_root, basename)
+    os.makedirs(output_caption_folder, exist_ok=True)
     # load llava at first
     model_name = get_model_name_from_path(args.model_path)
     tokenizer, model, image_processor, context_len = load_pretrained_model(
-        args.model_path, args.model_base, model_name, args.load_8bit, args.load_4bit, device_map=gpu_id)
+        args.model_path, args.model_base, model_name, args.load_8bit, args.load_4bit)
     
     our_chatbot = InferenceDemo(args, args.model_path, tokenizer, model, image_processor, context_len)
 
@@ -266,7 +267,9 @@ if __name__ == "__main__":
             clear_history(our_chatbot, history)
             # save local captions to txt
             txt_file = os.path.join(output_caption_folder, image_path.split('/')[-1][:-4] + '.txt')
-            np.savetxt(txt_file, outputs, fmt='%s')
+            # np.savetxt(txt_file, outputs, fmt='%s')
+            with open(txt_file, 'w') as f:
+                f.write(outputs + '\n')
         
         ### 2. global caption given random images
         if num_global_prompts > 1:
@@ -291,12 +294,15 @@ if __name__ == "__main__":
         # print(f'Global caption for {image_id}: {outputs}')
         clear_history(our_chatbot, history)    
         txt_file = os.path.join(output_caption_folder, image_path.split('/')[-1].split('.')[0] + '.global.txt')
-        np.savetxt(txt_file, outputs, fmt='%s')
-        print(f'[INFO][GPU{gpu_id}][{worker_task_id}/{len(all_ids)}][{image_id}] Time takes {time.time() - st} seconds.')                                                         
+        # np.savetxt(txt_file, outputs, fmt='%s')
+        with open(txt_file, 'w') as f:
+            f.write(outputs + '\n')
+        print(f'[INFO][GPU{gpu_id}][{worker_task_id}/{len(all_ids)}][{image_id}] Time takes {time.time() - st} seconds.')
     
     # 4. tar captions
     caption_tar_file = os.path.join(output_root, tar_name)
     pack_results_single_level(output_caption_folder, caption_tar_file, mode='all')
+    os.system(f'rm -r {tar_root}')
 
     ed = time.time()
     print(f'Preprocessing {tar_name} takes {ed - st} seconds')

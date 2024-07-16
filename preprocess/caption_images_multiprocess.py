@@ -61,9 +61,9 @@ def queue_worker(
         gpu_id = worker_i % 8
         
         # run the single script file
-        command = f'CUDA_VISIBLE_DEVICES={gpu_id} python caption_images_single_general.py --output_root {output_root} --work_root {work_root} --bucket {bucket} --tar_file {tar_name} --local_prompt_percent {local_prompt_percent} --load_8bit 0 --load_4bit 0 --global_input_image_num 16 --num_global_prompts 1'
+        command = f'CUDA_VISIBLE_DEVICES={gpu_id} python caption_images_single_general.py --output_root {output_root} --work_root {work_root} --bucket {bucket} --tar_file {tar_name} --local_prompt_percent {local_prompt_percent} --load-8bit 0 --load-4bit 0 --global_input_image_num 16 --num_global_prompts 1'
         subprocess.run(command, shell=True)
-        print(f'Preprocessing {tar_name} takes {ed - st} seconds')
+        # print(f'Preprocessing {tar_name} takes {ed - st} seconds')
 
             
 

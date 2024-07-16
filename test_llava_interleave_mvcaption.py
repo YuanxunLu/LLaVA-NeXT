@@ -235,7 +235,7 @@ if __name__ == "__main__":
     # argparser.add_argument("--load-8bit", action="store_true")
     # argparser.add_argument("--load-4bit", action="store_true")
     argparser.add_argument("--load-8bit", type=int, default=0)
-    argparser.add_argument("--load-4bit", type=int, default=1)
+    argparser.add_argument("--load-4bit", type=int, default=0)
     argparser.add_argument("--debug", action="store_true")
     
     args = argparser.parse_args()
@@ -257,14 +257,14 @@ if __name__ == "__main__":
     all_ids = sorted(list(set([file.split('.')[0] for file in all_images])))
     
     DESCRIPTION_PROMPTS = [
-        'Please write a detailed image prompt for the object/objects.',
-        'Describe the color, texture, shape, and features of the object/objects in the image.',
-        'Please describe the object/objects in the image.',
-        'Write a image prompt for the object/objects',
-        'Write a image prompt for the object/objects, less than 10 words.',
-        'Write a image prompt for the object/objects, less than 20 words.',
+        # 'Please write a detailed image prompt for the object/objects.',
+        # 'Describe the color, texture, shape, and features of the object/objects in the image.',
+        # 'Please describe the object/objects in the image.',
+        # 'Write a image prompt for the object/objects',
+        # 'Write a image prompt for the object/objects, less than 10 words.',
+        # 'Write a image prompt for the object/objects, less than 20 words.',
         'Write a image prompt for the object/objects, less than 50 words.',
-        'Write a image prompt for the object/objects, less than 100 words.'
+        # 'Write a image prompt for the object/objects, less than 100 words.'
     ]
     
     
