@@ -169,6 +169,7 @@ if __name__ == "__main__":
     parser.add_argument('--work_root', type=str, default='/media/yuanxun/G/dataset_captions_work_root/')
     parser.add_argument('--output_root', type=str, default='/media/yuanxun/G/dataset_captions/')
     parser.add_argument('--bucket', type=str, default='')
+    parser.add_argument('--upload_bucket', type=str, default='')
     parser.add_argument('--download_tar', type=int, default=1)
     parser.add_argument('--skip_tar', type=int, default=0)
     parser.add_argument('--num_work_tar', type=int, default=16)
@@ -329,6 +330,10 @@ if __name__ == "__main__":
     caption_tar_file = os.path.join(output_root, tar_name)
     pack_results_single_level(output_caption_folder, caption_tar_file, mode='all')
     os.system(f'rm -r {tar_root}')
+
+    # 5. upload
+    subprocess.call(['aws', '--endpoint-url', 'https://conductor.data.apple.com', '--cli-read-timeout', '300', 
+                        's3', 'cp', caption_tar_file, args.upload_bucket])
 
     ed = time.time()
     print(f'Preprocessing {tar_name} takes {ed - st} seconds')
