@@ -251,25 +251,25 @@ if __name__ == "__main__":
     
     ## first genrate local captions for each images, then gloal captions given random images
     
-    unzipped_tar_root = 'examples/mvimgnet'
+    unzipped_tar_root = 'examples/realestate10k'
     all_files = os.listdir(unzipped_tar_root)
     all_images = [f for f in all_files if f.endswith(('.jpg', '.png')) and 'depth' not in f]
     all_ids = sorted(list(set([file.split('.')[0] for file in all_images])))
     
     DESCRIPTION_PROMPTS = [
-        'Please write a detailed image prompt for the object/objects.',
-        'Describe the color, texture, shape, and features of the object/objects in the image.',
-        'Please describe the object/objects in the image.',
-        'Write a image prompt for the object/objects',
-        'Write a image prompt for the object/objects, less than 10 words.',
-        'Write a image prompt for the object/objects, less than 20 words.',
-        'Write a image prompt for the object/objects, less than 50 words.',
-        'Write a image prompt for the object/objects, less than 100 words.'
+        'Please write a detailed image prompt for the entire scene.',
+        'Describe the colors, textures, shapes, and features of everything in the image, including the background and surroundings.',
+        'Please describe all the elements in the image, focusing on both objects and the overall scene.',
+        'Write a detailed image prompt for the scene.',
+        'Write an image prompt for the scene, less than 10 words.',
+        'Write an image prompt for the scene, less than 20 words.',
+        'Write an image prompt for the scene, less than 50 words.',
+        'Write an image prompt for the scene, less than 100 words.',
+        'Describe the setting, lighting, and mood of the scene along with the objects within it.'
     ]
-    
-    
+
     all_ids = all_ids[:1]
-    global_input_image_num = 4
+    global_input_image_num = 8
     num_global_prompts = 1
     for image_id in all_ids:
         st = time.time()
