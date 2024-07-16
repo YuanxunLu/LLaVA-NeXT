@@ -293,6 +293,8 @@ if __name__ == "__main__":
             with open(txt_file, 'w') as f:
                 f.write(outputs + '\n')
         
+        torch.cuda.empty_cache()
+        
         ### 2. global caption given random images
         if num_global_prompts > 1:
             raise NotImplementedError('save function not implemented. only suuport num_global_prompts == 1 now.')
@@ -320,6 +322,8 @@ if __name__ == "__main__":
         with open(txt_file, 'w') as f:
             f.write(outputs + '\n')
         print(f'[INFO][GPU{gpu_id}][{worker_task_id}/{len(all_ids)}][{image_id}] Time takes {time.time() - st} seconds.')
+
+        torch.cuda.empty_cache()
     
     # 4. tar captions
     caption_tar_file = os.path.join(output_root, tar_name)
