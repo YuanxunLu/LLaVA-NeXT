@@ -61,7 +61,7 @@ def queue_worker(
         gpu_id = worker_i % 8
         
         # run the single script file
-        command = f'CUDA_VISIBLE_DEVICES={gpu_id} python caption_images_single_general.py --output_root {output_root} --work_root {work_root} --bucket {bucket} --tar_file {tar_name} --local_prompt_percent {local_prompt_percent} --load-8bit 0 --load-4bit 0 --global_input_image_num 16 --num_global_prompts 1'
+        command = f'CUDA_VISIBLE_DEVICES={gpu_id} python caption_images_single_general.py --output_root {output_root} --work_root {work_root} --bucket {bucket} --upload_bucket {args.upload_bucket} --tar_file {tar_name} --dataset_type {args.dataset_type} --local_prompt_percent {local_prompt_percent} --load-8bit 0 --load-4bit 0 --global_input_image_num {args.global_input_image_num} --num_global_prompts 1'
         subprocess.run(command, shell=True)
         # print(f'Preprocessing {tar_name} takes {ed - st} seconds')
 
@@ -74,6 +74,7 @@ if __name__ == "__main__":
     parser.add_argument('--work_root', type=str, default='/media/yuanxun/G/dataset_captions_work_root/')
     parser.add_argument('--output_root', type=str, default='/media/yuanxun/G/dataset_captions/')
     parser.add_argument('--bucket', type=str, default='')
+    parser.add_argument('--upload_bucket', type=str, default='')
     parser.add_argument('--download_tar', type=int, default=1)
     parser.add_argument('--skip_tar', type=int, default=0)
     parser.add_argument('--num_work_tar', type=int, default=16)
