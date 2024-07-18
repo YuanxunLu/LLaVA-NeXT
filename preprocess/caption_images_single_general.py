@@ -51,18 +51,18 @@ def pack_results_single_level(source_folder, target_file, mode='all'):
         for root, _, files in os.walk(source_folder):
             for file in sorted(files):
                 file_path = os.path.join(root, file)
-                if file.endswith(('.npy', '.png', 'jpg')):
-                    if mode == 'RGB':
-                        if not 'depth' in file and not 'normal' in file:
-                            arcname = os.path.relpath(file_path, source_folder)
-                            tar.add(file_path, arcname=arcname)
-                    elif mode == 'depth':
-                        if 'depth' in file or '.npy' in file:
-                            arcname = os.path.relpath(file_path, source_folder)
-                            tar.add(file_path, arcname=arcname)
-                    elif mode == 'all':
+                # if file.endswith(('.npy', '.png', 'jpg')):
+                if mode == 'RGB':
+                    if not 'depth' in file and not 'normal' in file:
                         arcname = os.path.relpath(file_path, source_folder)
                         tar.add(file_path, arcname=arcname)
+                elif mode == 'depth':
+                    if 'depth' in file or '.npy' in file:
+                        arcname = os.path.relpath(file_path, source_folder)
+                        tar.add(file_path, arcname=arcname)
+                elif mode == 'all':
+                    arcname = os.path.relpath(file_path, source_folder)
+                    tar.add(file_path, arcname=arcname)
  
 
 class InferenceDemo(object):
