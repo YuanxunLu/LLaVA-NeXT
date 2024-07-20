@@ -1,8 +1,14 @@
 import os
 import subprocess
 import numpy as np
+import argparse
 
-bucket = 's3://objaverse-render-random32view-240516'
+parser = argparse.ArgumentParser()
+parser.add_argument('bucket', type=str, default='s3://objaverse-render-random32view-240516')
+parser.add_argument('--out', type=str, default='all_tar_files.txt')
+args = parser.parse_args()
+
+bucket = args.bucket
 
 tar_list_names = ['tar_list_train.txt', 'tar_list_test.txt']
 all_tar_files = []
@@ -19,4 +25,4 @@ for tar_name in tar_list_names:
 
 
 all_tar_files = list(set(all_tar_files))
-np.savetxt('all_tar_files.txt', all_tar_files, fmt='%s')
+np.savetxt(args.out, all_tar_files, fmt='%s')

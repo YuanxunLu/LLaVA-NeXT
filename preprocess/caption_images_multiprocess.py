@@ -121,7 +121,13 @@ if __name__ == "__main__":
         file_list = tar_list[st_tar : ed_tar]
         num_items = len(file_list)
     else:
-        raise NotImplementedError()
+        assert 0 == os.system(f'bash get_unfinished.sh {bucket} {args.upload_bucket}')
+        with open('unfinished_tar_files.txt') as f:
+            all_tar_files = [l.strip() for l in f if len(l.strip()) > 0]
+        tar_list = sorted(list(set(all_tar_files)))
+        st_tar, ed_tar = args.skip_tar, args.skip_tar + args.num_work_tar
+        file_list = tar_list[st_tar : ed_tar]
+        num_items = len(file_list)
     
     # multiprocess
     print(f"[INFO] Start processing {num_items} tars")
