@@ -107,12 +107,11 @@ if __name__ == "__main__":
         tar_list_names = ['tar_list_train.txt', 'tar_list_test.txt']
         all_tar_files = []
         for tar_name in tar_list_names:
-            bucket_tar_list = os.path.join(bucket, 'tar_list_train.txt')
-            tar_list_file = 'tar_list_train.txt'
+            bucket_tar_list = os.path.join(bucket, tar_name)
             subprocess.call(['aws', '--endpoint-url', 'https://conductor.data.apple.com', '--cli-read-timeout', '300', 
-                            's3', 'cp', bucket_tar_list, tar_list_file])
+                            's3', 'cp', bucket_tar_list, tar_name])
             # load tar_list
-            with open(tar_list_file, "r") as f:
+            with open(tar_name, "r") as f:
                 tar_list = f.readlines()
             tar_list = [tar.strip() for tar in tar_list]
             all_tar_files.extend(tar_list)
