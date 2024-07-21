@@ -1,3 +1,7 @@
+cd ..
+python test_llava_interleave_mvcaption.py
+cd -
+
 python caption_images_multiprocess.py  \
     --output_root ${PROC_OUTPUT_ROOT:-"/mnt/data/dataset_captions"} \
     --work_root ${PROC_WORK_ROOT:-"/mnt/data/dataset_captions_work_root"} \
