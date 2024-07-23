@@ -318,7 +318,7 @@ if __name__ == "__main__":
             
         # print(f'Global caption for {image_id}: {outputs}')
         clear_history(our_chatbot, history)    
-        txt_file = os.path.join(output_caption_folder, image_path.split('/')[-1].split('.')[0] + '.global.txt')
+        txt_file = os.path.join(output_caption_folder, image_paths[0].split('/')[-1].split('.')[0] + '.global.txt')
         # np.savetxt(txt_file, outputs, fmt='%s')
         with open(txt_file, 'w') as f:
             f.write(outputs + '\n')
